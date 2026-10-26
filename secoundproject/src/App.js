@@ -109,31 +109,31 @@ const VESSELS = [
   {
     id: 'dsv',
     name: 'Diving Support Vessels (DSV)',
-    image: IMG_FALLBACK,
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTk2jEvcz3riV5ZHQFpjVvy68BCeSZmjB8J8stmt-gI7Q&s=10',
     desc: 'Purpose-built for subsea interventions, Diving Support Vessels facilitate complex underwater operations. Equipped with integrated surface-supplied and saturation diving systems, decompression chambers, and precision station-keeping, they enable commercial dive teams to safely execute subsea inspections, structural repairs, pipeline tie-ins, and subsea infrastructure installations.',
   },
   {
     id: 'seismic',
     name: 'Seismic Survey Vessels',
-    image: IMG_FALLBACK,
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_v2XHPXnR-fQZlEA12NadBc8MQBJ-HEiI-kl2t1OpFnDvpnVOQzOymH4&s=10',
     desc: 'Specialized for offshore geophysical exploration, seismic survey vessels map subsea geological formations to identify hydrocarbon reservoirs. They deploy arrays of acoustic sources and multi-kilometer hydrophone streamers to capture high-resolution 2D, 3D, and 4D seismic data across vast offshore licensing blocks.',
   },
   {
     id: 'floatel',
     name: 'Accommodation Vessels & Barges (Floatels)',
-    image: IMG_FALLBACK,
+    image: 'https://www.marineinsight.com/wp-content/uploads/2024/08/Use-of-Accommodation-Barges.png',
     desc: 'Often termed "floatels," these marine units provide secure, full-service offshore living quarters during large-scale commissioning, maintenance, and decommissioning campaigns. Beyond high-capacity modular cabins, they house dedicated dining halls, medical facilities, recreation spaces, and integrated workshop areas to maintain workforce well-being and operational readiness offshore.',
   },
   {
     id: 'crane',
     name: 'Heavy-Lift Crane Vessels',
-    image: IMG_FALLBACK,
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSI60QTDqYzLcS4b1ow046ERNMsFHJR3AvPgJeYjJb-s30CL8s5GbnCFDB&s=10',
     desc: 'Designed for ultra-heavy marine construction, crane vessels deploy high-capacity revolving or sheerleg cranes to lift, position, and decommission massive offshore assets. They play a critical role in the precise installation of topsides, jacket foundations, subsea templates, and offshore wind turbines in open-water environments.',
   },
   {
     id: 'ctv',
     name: 'Crew Transfer Vessels (CTV) / Fast Crew Boats',
-    image: IMG_FALLBACK,
+    image: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR_pmI3CZwM5lEhDoiyIwa45SPphmiO_jW__eGEfDVL6Q&s=10',
     desc: 'Engineered for speed, efficiency, and comfort, these fast-transit vessels provide safe personnel transfers between shore bases and offshore installations. Equipped with optimized hull forms and specialized motion-compensated gangways, they minimize transit times and deliver reliable crew rotations even in rough transit corridors.',
   },
 ];
