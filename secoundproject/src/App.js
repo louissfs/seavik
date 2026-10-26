@@ -1,22 +1,47 @@
 import React, { useState } from 'react';
 import './App.css';
 import {
-  Anchor, Phone, Mail, ChevronRight, Menu, X, ArrowRight,
-  Check, Copy, Clock, Send,
+  Phone, Mail, ChevronRight, Menu, X, ArrowRight,
+  Check, Copy, Send,
   FileText, CheckCircle2, AlertCircle, Radio
 } from 'lucide-react';
 
 // ==========================================
-// EMAILJS CONFIGURATION & DISPATCH SERVICE
+// EMAIL SENDING (EmailJS first, Web3Forms fallback)
 // ==========================================
+const PLACEHOLDER_KEY = "YOUR_ACCESS_KEY_HERE";
+const WEB3FORMS_ACCESS_KEY = PLACEHOLDER_KEY;
+
+async function sendWithWeb3Forms(values, accessKey) {
+  if (!accessKey || accessKey === PLACEHOLDER_KEY) {
+    console.warn("Add your Web3Forms access key to send email.");
+    throw new Error("no-key");
+  }
+  const res = await fetch("https://api.web3forms.com/submit", {
+    method: "POST",
+    headers: { "Content-Type": "application/json", Accept: "application/json" },
+    body: JSON.stringify({
+      access_key: accessKey,
+      subject: `New enquiry from ${values.name}`,
+      from_name: "Seavik website",
+      name: values.name,
+      email: values.email,
+      cargo_or_vessel: values.cargo,
+      message: values.message,
+    }),
+  });
+  const data = await res.json();
+  if (!data.success) throw new Error(data.message || "send-failed");
+}
+
 const EMAILJS = {
-  serviceId: "service_rsc8zh7", // Email Services tab
-  templateId: "template_pg7lljk", // the "new message" template that emails you
-  publicKey: "fo5LVgFVm0Nj7jDNc", // Account tab. Public keys are meant to be in frontend code.
+  serviceId: "service_rsc8zh7",
+  templateId: "template_pg7lljk",
+  publicKey: "fo5LVgFVm0Nj7jDNc", // public keys are meant to be in frontend code
 };
 
 const emailjsReady = () =>
-  Boolean(EMAILJS.serviceId && EMAILJS.templateId && EMAILJS.publicKey && !EMAILJS.publicKey.startsWith("YOUR_"));
+  Object.values(EMAILJS).every((v) => v && !v.startsWith("YOUR_"));
 
 async function sendWithEmailJS(values) {
   const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
@@ -44,9 +69,15 @@ async function sendWithEmailJS(values) {
   if (!res.ok) {
     const reason = await res.text().catch(() => "");
     console.error("EmailJS error:", res.status, reason);
-    throw new Error(reason || `EmailJS returned HTTP status ${res.status}`);
+    throw new Error("send-failed");
   }
-  return res;
+}
+
+// EmailJS if configured, otherwise Web3Forms.
+function sendEnquiry(values, accessKey) {
+  return emailjsReady()
+    ? sendWithEmailJS(values)
+    : sendWithWeb3Forms(values, accessKey);
 }
 
 // ==========================================
@@ -63,8 +94,6 @@ const COMPANY = {
   hours: '24/7 Operational Tonnage Desk',
   slaResponse: 'Within 1 business day (Urgent spot: < 2 hours)'
 };
-
-const HERO_IMAGE = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTHnBJ3Psb2qzTKb109SeQTql9N2lBvtt0tew5I3zgIKg&s=10';
 
 const QUICK_TAGS = [
   'PSV Spot Charter',
@@ -190,7 +219,7 @@ export default function App() {
   const [copiedHero, setCopiedHero] = useState(false);
 
 
-  // Enquiry Form State & EmailJS
+  // Enquiry Form State
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [phone, setPhone] = useState('');
@@ -263,12 +292,16 @@ export default function App() {
     };
 
     try {
-      await sendWithEmailJS(payload);
+      await sendEnquiry(payload, WEB3FORMS_ACCESS_KEY);
       const generatedRef = `SVK-${new Date().getFullYear()}-${Math.floor(1000 + Math.random() * 9000)}`;
       setSubmittedRef(generatedRef);
     } catch (err) {
-      console.error('EmailJS dispatch failed:', err);
-      setFormError(err.message || 'Transmission encountered a network issue. You can click below to mail our operations desk directly.');
+      console.error('Enquiry dispatch failed:', err);
+      setFormError(
+        err && err.message === 'no-key'
+          ? "Email sending isn't connected yet. Add your EmailJS or Web3Forms keys."
+          : `That didn't send. Try again, or email ${COMPANY.email}.`
+      );
     } finally {
       setSubmitting(false);
     }
@@ -379,7 +412,7 @@ export default function App() {
           </div>
 
           <div>
-            
+
           </div>
         </div>
       </section>
@@ -532,7 +565,7 @@ export default function App() {
       </section>
 
 
-      {/* 7. SEND AN ENQUIRY FORM (EMAILJS INTEGRATED) */}
+      {/* 5. SEND AN ENQUIRY FORM */}
       <section id="enquiry" className="enquiry-section">
         <div className="seavik-container">
           <div className="enquiry-grid">
@@ -568,17 +601,6 @@ export default function App() {
                     <strong className="contact-main-val">{COMPANY.phone}</strong>
                   </div>
                 </a>
-              </div>
-
-              <div className="enquiry-sla-card">
-                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.4rem' }}>
-                  <Clock size={16} color="#0284c7" />
-                  <strong style={{ fontSize: '13px', color: '#0c2444' }}>Live Broker Dispatch System</strong>
-                </div>
-                <p style={{ margin: 0, fontSize: '12px', color: '#475569', lineHeight: 1.5 }}>
-                  Enquiries are dispatched to our commercial chartering desk via EmailJS (service: <code>{EMAILJS.serviceId}</code>).
-                  We immediately cross-reference open positions across Aberdeen, Den Helder, Stavanger and Rotterdam.
-                </p>
               </div>
             </div>
 
@@ -722,7 +744,7 @@ export default function App() {
                     </button>
 
                     <div style={{ textAlign: 'center', marginTop: '0.85rem', fontSize: '11.5px', color: '#64748b' }}>
-                      Directly routed to <strong>{COMPANY.email}</strong> via verified EmailJS service.
+                      Directly routed to <strong>{COMPANY.email}</strong>.
                     </div>
                   </form>
                 )}
@@ -732,7 +754,7 @@ export default function App() {
         </div>
       </section>
 
-      {/* 8. COMPANY INFO & ABOUT */}
+      {/* 6. COMPANY INFO & ABOUT */}
       <section id="about" className="about-section">
         <div className="seavik-container">
           <div className="about-grid">
@@ -850,7 +872,7 @@ export default function App() {
         </div>
       </footer>
 
-      {/* 10. TECHNICAL SPECIFICATIONS MODAL */}
+      {/* 8. TECHNICAL SPECIFICATIONS MODAL */}
       {selectedVessel && (
         <div className="modal-overlay" onClick={() => setSelectedVessel(null)}>
           <div className="modal-card" onClick={(e) => e.stopPropagation()}>
