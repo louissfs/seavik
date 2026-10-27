@@ -228,12 +228,25 @@ export default function App() {
       {/* NAVBAR */}
       <header className="navbar-seavik">
         <div className="seavik-container nav-container">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', cursor: 'pointer' }} onClick={() => go('home')}>
-            <div>
-              <div className="brand-title">{COMPANY.name}</div>
-              <div className="brand-subtitle">Maritime Chartering &amp; Brokerage</div>
-            </div>
-          </div>
+          
+          
+          
+
+
+
+
+
+
+
+
+
+          <div className="brand-logo-wrap" onClick={() => go('home')}>
+  <img
+    src={`${process.env.PUBLIC_URL}/logoav.png`}
+    alt="SEAVIK LTD - Maritime Chartering & Brokerage"
+    className="brand-logo"
+  />
+</div>
 
           <nav className="nav-links">
             {navItems.map(([key, label]) => (
